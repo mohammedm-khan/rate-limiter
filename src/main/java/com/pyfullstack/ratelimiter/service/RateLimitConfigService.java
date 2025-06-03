@@ -22,7 +22,6 @@ public class RateLimitConfigService {
         this.configCache = new ConcurrentHashMap<>();
     }
 
-    @PostConstruct
     public void loadConfigurations() {
         log.info("Loading rate limit configurations from database");
         List<RateLimitConfig> configs = rateLimitConfigRepository.findAllByEnabledTrue();
@@ -36,6 +35,10 @@ public class RateLimitConfigService {
     }
 
     public RateLimitConfig getConfig(String path, String method, String tenantId) {
+
+        if(configCache.isEmpty()) {
+            loadConfigurations();
+        }
         // First try to find tenant-specific config
         String tenantKey = buildKey(path, method, tenantId);
         RateLimitConfig config = configCache.get(tenantKey);
