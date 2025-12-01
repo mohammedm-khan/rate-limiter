@@ -1,7 +1,6 @@
 package com.pyfullstack.ratelimiter.repository;
 
 import com.pyfullstack.ratelimiter.entity.RateLimitConfig;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -11,7 +10,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-@DependsOn("dataSourceInitializer")
 public interface RateLimitConfigRepository extends JpaRepository<RateLimitConfig, Long> {
 
     // Find all enabled configurations

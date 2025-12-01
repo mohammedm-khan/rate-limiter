@@ -3,6 +3,7 @@ package com.pyfullstack.ratelimiter.service;
 import com.pyfullstack.ratelimiter.entity.RateLimitConfig;
 import com.pyfullstack.ratelimiter.repository.RateLimitConfigRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.PostConstruct;
@@ -22,6 +23,9 @@ public class RateLimitConfigService {
         this.configCache = new ConcurrentHashMap<>();
     }
 
+
+    @PostConstruct
+    @Scheduled(fixedRateString = "${config.reload.interval:300000}")
     public void loadConfigurations() {
         log.info("Loading rate limit configurations from database");
         List<RateLimitConfig> configs = rateLimitConfigRepository.findAllByEnabledTrue();
@@ -36,9 +40,6 @@ public class RateLimitConfigService {
 
     public RateLimitConfig getConfig(String path, String method, String tenantId) {
 
-        if(configCache.isEmpty()) {
-            loadConfigurations();
-        }
         // First try to find tenant-specific config
         String tenantKey = buildKey(path, method, tenantId);
         RateLimitConfig config = configCache.get(tenantKey);
